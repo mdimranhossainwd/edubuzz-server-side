@@ -26,10 +26,19 @@ async function run() {
     // await client.connect();
 
     const featuresCollections = client.db("EdubuzzDB").collection("features");
+    const createAssainmentCollections = client
+      .db("EdubuzzDB")
+      .collection("createassainment");
 
     app.get("/features", async (req, res) => {
       const cursor = await featuresCollections.find().toArray();
       res.send(cursor);
+    });
+
+    app.post("/createassainment", async (req, res) => {
+      const newAssainment = req.body;
+      const result = await createAssainmentCollections.insertOne(newAssainment);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection

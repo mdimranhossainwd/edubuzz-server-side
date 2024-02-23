@@ -41,6 +41,11 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/getassainment", async (req, res) => {
+      const cursor = await createAssainmentCollections.find().toArray();
+      res.send(cursor);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(uri);

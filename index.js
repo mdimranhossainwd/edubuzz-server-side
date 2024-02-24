@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.EDUBUZZ_USERNAME}:${process.env.EDUBUZZ_USERPASSWORD}@cluster0.2xcsswz.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -44,6 +44,36 @@ async function run() {
     app.get("/getassainment", async (req, res) => {
       const cursor = await createAssainmentCollections.find().toArray();
       res.send(cursor);
+    });
+
+    app.put("/updateassainment/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateAssainment = req.body;
+      const updateForm = {
+        $set: {
+          name: updateAssainment.name,
+          email: updateAssainment.email,
+          marks: updateAssainment.marks,
+          img: updateAssainment.img,
+          date: updateAssainment.date,
+          details: updateAssainment.details,
+        },
+      };
+      const result = await createAssainmentCollections.updateOne(
+        filter,
+        updateForm,
+        options
+      );
+      res.send(result);
+    });
+
+    app.get("/updateassainment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await createAssainmentCollections.findOne(query);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
